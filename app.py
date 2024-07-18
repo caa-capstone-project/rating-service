@@ -10,16 +10,23 @@ table = dynamodb.Table('Ratings')  # Replace with your actual DynamoDB table nam
 def input_data():
     try:
         data = request.json  # Assuming data comes in as JSON
-        for user_id, ratings in data.items():
-            for movie_id, rating in ratings:
-                print(f"userid: {type(user_id)},movieid: {type(movie_id)}, rating: {type(rating)}")
-                decimal_rating = Decimal(str(rating))
-                # Store data in DynamoDB
-                table.put_item(Item={
-                    'userId': int(user_id),
-                    'movieId': movie_id,
-                    'rating': decimal_rating
-                })
+        user_id = data.get("userId")
+        ratings = data.get("rating", [])
+
+        for rating in ratings:
+            movie_id = rating.get("movieId")
+            rating_value = rating.get("rating")
+
+            # print(f"userid: {user_id}, movieid: {movie_id}, rating: {rating_value}")
+            decimal_rating = Decimal(str(rating_value))
+            
+            # Store data in DynamoDB
+            table.put_item(Item={
+                'userId': user_id,
+                'movieId': movie_id,
+                'rating': decimal_rating
+            })
+            
         return jsonify({'message': 'Data stored successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -34,4 +41,4 @@ def test_connection():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=4203)
