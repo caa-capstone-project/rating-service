@@ -6,25 +6,23 @@ app = Flask(__name__)
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Ratings')  # Replace with your actual DynamoDB table name
 
-@app.route('/store_ratings', methods=['POST'])
+@app.route('/rating', methods=['POST'])
 def input_data():
     try:
-        data = request.json  # Assuming data comes in as JSON
-        user_id = data.get("userId")
-        ratings = data.get("rating", [])
+        data = request.get_json()  # Assuming data comes in as JSON
+        print("Request: ", data)
+        userId = data.get("userId")
+        ratings = data.get("ratings", [])
 
         for rating in ratings:
-            movie_id = rating.get("movieId")
+            print("Rating: ", rating)
             rating_value = rating.get("rating")
+            rating_value = Decimal(str(rating_value))
+            rating["rating"] = rating_value
 
-            # print(f"userid: {user_id}, movieid: {movie_id}, rating: {rating_value}")
-            decimal_rating = Decimal(str(rating_value))
-            
-            # Store data in DynamoDB
-            table.put_item(Item={
-                'userId': user_id,
-                'movieId': movie_id,
-                'rating': decimal_rating
+        table.put_item(Item={
+                'userId': userId,
+                'ratings': ratings
             })
             
         return jsonify({'message': 'Data stored successfully'}), 200
