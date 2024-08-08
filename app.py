@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from decimal import Decimal
+from flask_cors import CORS
 import boto3
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 app = Flask(__name__)
+CORS(app)
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Ratings')  # Replace with your actual DynamoDB table name
 
