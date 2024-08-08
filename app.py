@@ -7,7 +7,7 @@ from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 app = Flask(__name__)
 CORS(app)
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-table = dynamodb.Table('Ratings')  # Replace with your actual DynamoDB table name
+table = dynamodb.Table('rating')
 
 @app.route('/rating', methods=['POST'])
 def input_data():
@@ -35,8 +35,6 @@ def input_data():
 @app.route('/rating/<string:userId>', methods=['GET'])
 def getRating(userId):
     try:
-        userId = int(userId)  # Convert userId to a number
-
         response = table.get_item(
             Key={
                 'userId': userId
