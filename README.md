@@ -15,3 +15,6 @@ This is a Flask application that provides a simple API for storing user ratings 
 
 4. Run app \
 `python app.py`
+
+# Build and push image for both arm64 and amd64 arch
+`docker buildx build --platform linux/amd64,linux/arm64 -t trystan00000/rating-service:latest --push .`
